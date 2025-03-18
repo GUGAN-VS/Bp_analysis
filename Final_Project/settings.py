@@ -120,17 +120,19 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+STATIC_URL = '/static/'
 
-STATIC_URL = 'static/'
+# The directory where `collectstatic` will store static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# STATICFILES_DIRS = [
-#     BASE_DIR / "static",
-# ]
+# Media files (for user-uploaded images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# Tell Django to find static files inside the `static/` directory
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -142,5 +144,4 @@ STATIC_ROOT = [
 
 TIME_ZONE = 'Asia/Kolkata'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
