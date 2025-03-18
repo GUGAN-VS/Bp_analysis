@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-(gl(my6w((igv=*zna57g&(io#0ac7dcb606cw)u66ph+a7n6k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['bp_analysis.onrender.com']
+DEBUG = False
 
 
 # Application definition
@@ -86,8 +87,7 @@ DATABASES = {
     )
 }
 
-ALLOWED_HOSTS = ['bp_analysis.onrender.com']
-DEBUG = False
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
