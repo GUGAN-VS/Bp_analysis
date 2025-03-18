@@ -86,7 +86,7 @@ DATABASES = {
     )
 }
 
-ALLOWED_HOSTS = ['Bp_analysis.onrender.com']
+ALLOWED_HOSTS = ['bp_analysis.onrender.com']
 DEBUG = False
 
 # Password validation
