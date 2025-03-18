@@ -26,8 +26,8 @@ SECRET_KEY = 'django-insecure-(gl(my6w((igv=*zna57g&(io#0ac7dcb606cw)u66ph+a7n6k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['bp_analysis.onrender.com']
-DEBUG = False
+ALLOWED_HOSTS = ['bp-analysis.onrender.com', '127.0.0.1', 'localhost']
+DEBUG = True
 
 
 # Application definition
