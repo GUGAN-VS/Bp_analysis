@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Caretaker Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-warning {
+            background-color: #f0ad4e;
+            border: none;
+            color: white;
+        }
+        .btn-warning:hover {
+            background-color: #d58512;
+        }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #007bff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BP Records for Patient ID: {{ patient_id }}</h1>
+        {% if messages %}
+            <div class="alert-container">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Systolic</th>
+                    <th>Diastolic</th>
+                    <th>Recorded At</th>
+                    <th>Analyze</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                    <tr>
+                        <td>{{ record.systolic }}</td>
+                        <td>{{ record.diastolic }}</td>
+                        <td>{{ record.created_at }}</td>
+                        <td>
+                            <form method="GET" action="{% url 'analyze' %}" style="display:inline;" class="analyze-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="patientid" value="{{ record.patient_id }}">
+                                <input type="hidden" name="systolic" value="{{ record.systolic }}">
+                                <input type="hidden" name="diastolic" value="{{ record.diastolic }}">
+                                <input type="hidden" name="created_date" value="{{ record.created_at }}">
+                                <button type="button" class="btn btn-primary analyze-btn" 
+                                        data-record-index="{{ forloop.counter }}">
+                                    Analyze
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr id="response-row-{{ forloop.counter }}" style="display: none;">
+                        <td colspan="4" id="response-content-{{ forloop.counter }}" style="text-align: left; background-color: #f9f9f9; padding: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div id="response-text-{{ forloop.counter }}"></div>
+                                <img src="{% static 'assets/BP.jpg' %}" alt="Analyze"  
+                                style="width: 250px; height: 150px; margin-right: 5px;">
+                                <button type="button" class="btn btn-danger close-btn" data-row-index="{{ forloop.counter }}" style="margin-left: 10px;">
+                                    Close
+                                </button>
+                            </div>
+                        </td>   
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No records found for this patient.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'logout' %}"><button class="btn btn-warning">Log Out</button></a>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.analyze-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const recordIndex = this.getAttribute('data-record-index');
+                const responseRow = document.getElementById(`response-row-${recordIndex}`);
+                const responseContent = document.getElementById(`response-text-${recordIndex}`);
+
+                const loader = document.createElement('div');
+                loader.className = 'loader';
+                this.disabled = true;
+                this.innerHTML = '';
+                this.appendChild(loader);
+
+                fetch(this.closest('form').action + '?' + new URLSearchParams(new FormData(this.closest('form'))), {
+                    method: 'GET'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.disabled = false;
+                    this.innerHTML = 'Analyze';
+                    responseContent.innerHTML = `<strong>Response:</strong><p>${data.response}</p>`;
+                    responseRow.style.display = 'table-row';
+                })
+                .catch(error => {
+                    this.disabled = false;
+                    this.innerHTML = 'Analyze';
+                    responseContent.innerHTML = `<strong>Error:</strong><p>Unable to fetch data. Please try again.</p>`;
+                    responseRow.style.display = 'table-row';
+                });
+            });
+        });
+
+        document.querySelectorAll('.close-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const rowIndex = this.getAttribute('data-row-index');
+                const responseRow = document.getElementById(`response-row-${rowIndex}`);
+                responseRow.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

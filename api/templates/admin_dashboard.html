@@ -1,0 +1,227 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+        .btn-warning {
+            background-color: #f0ad4e;
+            border: none;
+            color: white;
+        }
+        .btn-warning:hover {
+            background-color: #d58512;
+        }
+        .response-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            text-align: left;
+        }
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #dc3545;
+            cursor: pointer;
+        }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #007bff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center;">All Patient BP Records</h1>
+        <form method="GET" action="{% url 'admin_dashboard' %}" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <input 
+                    type="text"
+                    name="search"
+                    placeholder="Search by Patient ID"
+                    value="{{ request.GET.search }}"
+                    style="padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; flex-grow: 1;">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Systolic</th>
+                    <th>Diastolic</th>
+                    <th>Recorded At</th>
+                    <th>Analyze</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                    <tr id="row-{{ forloop.counter }}" {% if request.GET.search and record.patient_id|default:"" == request.GET.search %}style="background-color: #FFFF99;"{% endif %}>
+                        <td>{{ record.patient_id }}</td>
+                        <td>{{ record.systolic }}</td>
+                        <td>{{ record.diastolic }}</td>
+                        <td>{{ record.created_at }}</td>
+                        <td>
+                            <form method="GET" action="{% url 'analyze' %}" style="display:inline;" class="analyze-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="patientid" value="{{ record.patient_id }}">
+                                <input type="hidden" name="systolic" value="{{ record.systolic }}">
+                                <input type="hidden" name="diastolic" value="{{ record.diastolic }}">
+                                <input type="hidden" name="created_date" value="{{ record.created_at }}">
+                                <button type="button" class="btn btn-primary analyze-btn" 
+                                        data-record-index="{{ forloop.counter }}">
+                                    Analyze
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'delete' record.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr id="response-row-{{ forloop.counter }}" style="display: none;">
+                        <td colspan="6" style="position: relative;">
+                            <div id="response-content-{{ forloop.counter }}" class="response-box">
+                            </div>
+                            <img src="{% static 'assets/BP.jpg' %}" alt="Analyze"  
+                                style="width: 250px; height: 150px; margin-right: 5px;">
+                            <button class="close-btn">&times;</button>
+                           
+                        </td>
+                    </tr> 
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No records found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'logout' %}">
+                <button class="btn btn-warning">Log Out</button>
+            </a>
+        </div>
+    </div>
+</body>
+
+<script>
+    document.querySelectorAll('.analyze-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const recordIndex = this.getAttribute('data-record-index');
+            const responseRow = document.getElementById(`response-row-${recordIndex}`);
+            const responseContent = document.getElementById(`response-content-${recordIndex}`);
+
+            const loader = document.createElement('div');
+            loader.className = 'loader';
+            this.disabled = true;
+            this.innerHTML = '';
+            this.appendChild(loader);
+
+            fetch(this.closest('form').action + '?' + new URLSearchParams(new FormData(this.closest('form'))), {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.disabled = false;
+                this.innerHTML = 'Analyze';
+                responseContent.innerHTML = `<strong>Response:</strong><p>${data.response}</p>`;
+                responseRow.style.display = 'table-row';
+            })
+            .catch(error => {
+                this.disabled = false;
+                this.innerHTML = 'Analyze';
+                responseContent.innerHTML = `<strong>Error:</strong><p>Unable to fetch data. Please try again.</p>`;
+                responseRow.style.display = 'table-row';
+            });
+        });
+    });
+
+    document.querySelectorAll('.close-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            this.closest('tr').style.display = 'none';
+        });
+    });
+
+</script>
+</html>
+
+
+
+
+
