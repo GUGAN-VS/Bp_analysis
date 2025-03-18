@@ -125,10 +125,6 @@ STATIC_URL = '/static/'
 # The directory where `collectstatic` will store static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files (for user-uploaded images)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 # Tell Django to find static files inside the `static/` directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
