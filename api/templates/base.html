@@ -1,4 +1,4 @@
-{% load static %}
+<!-- {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,11 +113,243 @@
     </script>
 
 </body>
+</html> -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Year Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+    <style>
+        #chatbot-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+#chatbot-popup {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+}
+
+#chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chatbot-body {
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#chatbot-input {
+    display: flex;
+}
+
+#chatbot-input input {
+    flex-grow: 1;
+    padding: 5px;
+}
+
+#chatbot-input button {
+    padding: 5px;
+}
+
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg" style="background-color: #5cb85c; font-weight: bold;">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#" style="color: white;">Patient's BP Records</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto">
+              <a class="nav-link active" href="#about-us" style="color: white;">ABOUT US</a>
+              <a class="nav-link active" href="#contact-us" style="color: white;">CONTACT US</a>
+              <a class="nav-link active" href="{% url 'login' %}" style="color: white;">Sign In</a>
+            </div>
+          </div>
+        </div>
+    </nav>
+
+    
+    <div class="hero">
+        <div class="container text-center text-white">
+            <h1>Welcome to the Patient BP Monitoring System</h1>
+            <p>This project provides a comprehensive platform for monitoring and managing blood pressure data for patients. Designed for healthcare providers, it offers seamless access and control over patient records.</p>
+            <a href="{% url 'login' %}"><button class="btn btn-primary">View</button></a>
+        </div>
+    </div>
+
+  
+<div class="container my-5 py-5" style="background-color: #f5f5f5; border-radius: 10px; padding: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+  <h2 style="text-align: center; color: #333;">About This Project</h2>
+  <p style="text-align: justify; color: #555; font-size: 1.1em; line-height: 1.6;">
+      The Patient BP Monitoring System is an innovative solution aimed at improving the management of blood pressure data within hospitals. The system allows for real-time tracking of patients' blood pressure, enabling healthcare providers to make informed decisions and respond promptly to any abnormalities.
+  </p>
+
+  <h3 style="color: #333; margin-top: 30px;">Key Features</h3>
+  <ul style="color: #555; font-size: 1.1em; line-height: 1.6;">
+      <li><strong>Real-time Monitoring:</strong> Provides up-to-date blood pressure readings for each patient, accessible at any time by hospital staff.</li>
+      <li><strong>Data Management:</strong> Facilitates easy storage and retrieval of patient data, improving the efficiency of healthcare operations.</li>
+      <li><strong>Access Control:</strong> Secure login system for hospital admins and caretakers, ensuring data privacy and accessibility based on user roles.</li>
+  </ul>
+
+  <h3 style="color: #333; margin-top: 30px;">How It Helps Hospital Management</h3>
+  <p style="text-align: justify; color: #555; font-size: 1.1em; line-height: 1.6;">
+      The system enhances hospital management by streamlining the process of monitoring and recording blood pressure data. It reduces manual data entry, minimizes errors, and provides a centralized platform for accessing patient information. This leads to improved operational efficiency and better patient care.
+  </p>
+
+
+  <div class="my-4 text-center" style="padding-bottom:20px;">
+    <img src="{% static 'assets/img1.jpg' %}" alt="Project Overview" class="img-fluid" style="max-width: 20%; height: auto; border-radius: 10px;margin-right: 100px;">
+    <img src="{% static 'assets/img2.jpg' %}" alt="Project Overview" class="img-fluid" style="max-width: 20%; height: auto; border-radius: 10px; margin-left: 100px;">
+    <p class="text-center" style="color: #777; font-style: italic;padding-top:20px;">This images shows the difference</p>
+</div>
+
+  <h3 style="color: #333; margin-top: 20px;">Benefits for Patients</h3>
+  <p style="text-align: justify; color: #555; font-size: 1.1em; line-height: 1.6;">
+      For patients, the system offers the advantage of continuous monitoring, which helps in early detection of potential health issues. It ensures that healthcare providers have accurate and timely data to make better clinical decisions, ultimately leading to improved health outcomes.
+  </p>
+
+
+  <div class="my-4">
+      <h4 style="color: #333; text-align: center;">Introduction Video</h4>
+      <iframe width="100%" height="400" src="https://www.youtube.com/embed/VIDEO_ID" title="Introduction to Patient BP Monitoring System" frameborder="0" allowfullscreen style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"></iframe>
+      <p class="text-center" style="color: #777; font-style: italic;">Watch our introduction video to learn more about the system.</p>
+  </div>
+</div>
+ 
+<section id="about-us" class="about-us bg-light py-5">
+  <div class="container">
+      <h2>About Us</h2>
+      <p>We are a team of developers and healthcare professionals committed to enhancing patient care through innovative technology. Our goal is to create user-friendly solutions that empower healthcare providers to deliver better patient outcomes.</p>
+  </div>
+</section>
+
+<section id="contact-us" class="contact-us bg-dark text-white py-5">
+  <div class="container">
+      <h2>Contact Us</h2>
+      <p>For inquiries and support, reach out to us at:</p>
+      <ul>
+          <li>Email: BME-support@bpmonitor.com</li>
+          <li>Phone: +91 7200309085</li>
+          <li>Address: 2nd floor,D-block,BME@NGP,Coimbatore, India</li>
+      </ul>
+  </div>
+</section>
+   
+    <footer class="text-center py-3" style="background-color: #5cb85c; color: white;">
+        <p>&copy; 2024 Patient BP Monitoring System. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>    
+
+    <script>
+        function toggleChatbot() {
+            var chatbotPopup = document.getElementById('chatbot-popup');
+            chatbotPopup.style.display = chatbotPopup.style.display === 'none' || chatbotPopup.style.display === '' ? 'flex' : 'none';
+        }
+    
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                // No JS message sending, just let form submit naturally
+            }
+        }
+    </script>
+<button id="chatbot-btn" onclick="toggleChatbot()">🤖 AI</button>
+
+<div id="chatbot-popup">
+    <div id="chatbot-header">
+        <h5>AI Assistant</h5>
+        <button onclick="toggleChatbot()">✖</button>
+    </div>
+    <div id="chatbot-body">
+        <div id="chatbot-messages"></div>
+    </div>
+    <div id="chatbot-input">
+        <input type="text" id="chatbot-user-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+<script>
+    function toggleChatbot() {
+    var chatbotPopup = document.getElementById('chatbot-popup');
+    chatbotPopup.style.display = chatbotPopup.style.display === 'none' || chatbotPopup.style.display === '' ? 'block' : 'none';
+}
+
+function sendMessage() {
+    let userInput = document.getElementById("chatbot-user-input").value;
+    let chatMessages = document.getElementById("chatbot-messages");
+
+    if (userInput.trim() === "") return;
+
+    // Append user message
+    let userMessage = document.createElement("div");
+    userMessage.textContent = "You: " + userInput;
+    chatMessages.appendChild(userMessage);
+
+    fetch("/chatbot/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({ "message": userInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let botMessage = document.createElement("div");
+        botMessage.textContent = "AI: " + data.response;
+        chatMessages.appendChild(botMessage);
+    });
+
+    document.getElementById("chatbot-user-input").value = "";
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        let cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
+</body>
 </html>
 
 
 
-
-
-
-
+ 
