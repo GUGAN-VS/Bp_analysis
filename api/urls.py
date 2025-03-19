@@ -10,6 +10,7 @@ urlpatterns = [
     path('admin_dashboard/', admin_dashboard, name='admin_dashboard'),
     path('caretaker_dashboard/<str:patient_id>/', caretaker_dashboard, name='caretaker_dashboard'),
     path('analyze/', analyze_patient_data, name='analyze'),
+    path("chatbot/", chatbot, name="chatbot"),
 ]
 
 # from django.urls import path
