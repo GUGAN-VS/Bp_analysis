@@ -11,6 +11,8 @@ from django.contrib import messages
 from django.db.models import Q  
 from django.http import JsonResponse
 import google.generativeai as genai
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 genai.configure(api_key="AIzaSyDtsjkld6Vqv0PWy4oOnoBVi15S9imjL_A ")  
 
@@ -130,50 +132,29 @@ def analyze_patient_data(request):
 
       
 
-# def analyze_patient_data(request):
-#     if request.method == "GET":
-#         patient_id = request.GET.get('patientid')
-#         systolic = request.GET.get('systolic')
-#         diastolic = request.GET.get('diastolic')
-#         created_date = request.GET.get('created_date')
-#         target_dashboard = request.GET.get('dashboard')  # New parameter to identify the target dashboard
+genai.configure(api_key="AIzaSyDtsjkld6Vqv0PWy4oOnoBVi15S9imjL_A")
 
-#         # Data for the Generative AI model
-#         prompt = f"""
-#         Patient ID: {patient_id}
-#         Systolic: {systolic}
-#         Diastolic: {diastolic}
-#         Created Date: {created_date}
+@csrf_exempt
+def chatbot(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        user_message = data.get("message")
 
-#         Based on the given information, analyze the patient's health condition. Diagnose whether the patient's blood pressure is within a normal range, if there is any risk involved (e.g., high risk, needs attention), and provide predictive analysis. Offer recommendations for improvement or maintenance without unnecessary details.
-#         ##Format response :
-#         Example: 
-#                Analysis: The patient's blood pressure is below the normal range for adults, indicating possible hypotension (low blood pressure). This condition warrants attention as it may present potential risks, including dizziness, fainting, and, in severe cases, complications such as organ damage. Further investigation is necessary to determine the underlying cause and assess the level of risk.
+        if not user_message:
+            return JsonResponse({"response": "Please enter a message."})
 
-#                Recommendations: The patient should seek immediate medical evaluation for proper diagnosis and management. Following medical guidance, potential lifestyle changes such as increased hydration and dietary adjustments may be advised. It is essential to adhere to any treatment plan recommended by a healthcare professional.
-#         Rules:
-#           - Avoid including any unnecessary details in the response.
-#           - Provide a clear and concise analysis of the patient's condition.
-#           - Avoid giving any recommendations without a clear understanding of the patient's situation.
-#           - Give the analysis and recommendations in a structured and logical manner.
-#           - Give the analysis and recommendations in a separate line
-#           - Strictly Highlight the Double star **Analysis** to bold font
-#         """
+        try:
+            model = genai.GenerativeModel("gemini-1.5-flash")  
+            
+            # Modify the prompt to control response length
+            refined_prompt = f"Give a short, engaging, and direct response: {user_message}"
+            response = model.generate_content(refined_prompt)
 
-#         try:
-#             # Call to the Generative AI model
-#             model = genai.GenerativeModel("gemini-1.5-flash")
-#             response = model.generate_content(prompt)
-#             analysis_response = response.text if hasattr(response, 'text') else str(response)
+            bot_reply = response.text.strip()
 
-#             # Send response based on the target dashboard
-#             if target_dashboard == "admindashboard":
-#                 return JsonResponse({"admin_response": analysis_response})
-#             elif target_dashboard == "caretakerdashboard":
-#                 return JsonResponse({"caretaker_response": analysis_response})
-#             else:
-#                 return JsonResponse({"error": "Invalid dashboard specified"}, status=400)
-#         except Exception as e:
-#             return JsonResponse({"error": str(e)}, status=500)
+            # Limit response to max 2 sentences
+            bot_reply = ". ".join(bot_reply.split(".")[:2])  
+        except Exception as e:
+            bot_reply = f"Error: {str(e)}"
 
-#     return JsonResponse({"error": "Invalid request method"}, status=400)
+        return JsonResponse({"response": bot_reply})
