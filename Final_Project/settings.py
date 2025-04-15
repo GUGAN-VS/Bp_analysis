@@ -89,7 +89,7 @@ DATABASES = {
         default=DATABASE_URL,
         # engine='django.db.backends.postgresql',# Ensure the engine is set
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=False,
     )
 }
 
