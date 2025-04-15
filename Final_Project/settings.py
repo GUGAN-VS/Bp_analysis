@@ -87,7 +87,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 DATABASES = {
     'default': dj_database_url.config(
         default=DATABASE_URL,
-        engine='django.db.backends.postgresql'  # Ensure the engine is set
+        engine='django.db.backends.postgresql',  # Ensure the engine is set
         ssl_require = True 
     )
 }
